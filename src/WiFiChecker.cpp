@@ -3,7 +3,6 @@
 #include <ESP8266WebServer.h>
 #include <EEPROM.h>
 
-
 //Function Decalration
 bool testWifi(void);
 void launchWeb(void);
@@ -15,75 +14,73 @@ ESP8266WebServer server(80);
 //Variables
 int i = 0;
 int statusCode;
-const char* ssid = "text";
-const char* passphrase = "text";
+const char *ssid = "text";
+const char *passphrase = "text";
 String st;
 String content;
 
-
 void DefaultWifiSetup()
 {
-    Serial.begin(115200); //Initialising if(DEBUG)Serial Monitor
-    Serial.println();
-    Serial.println("Disconnecting previously connected WiFi");
-    WiFi.disconnect();
-    EEPROM.begin(512); //Initialasing EEPROM
-    delay(10);
-    pinMode(LED_BUILTIN, OUTPUT);
-    Serial.println();
-    Serial.println();
-    Serial.println("Startup");
+  Serial.begin(115200); //Initialising if(DEBUG)Serial Monitor
+  Serial.println();
+  Serial.println("Disconnecting previously connected WiFi");
+  WiFi.disconnect();
+  EEPROM.begin(512); //Initialasing EEPROM
+  delay(10);
+  pinMode(LED_BUILTIN, OUTPUT);
+  Serial.println();
+  Serial.println();
+  Serial.println("Startup");
 
-    //---------------------------------------- Read eeprom for ssid and pass
-    Serial.println("Reading EEPROM ssid");
+  //---------------------------------------- Read eeprom for ssid and pass
+  Serial.println("Reading EEPROM ssid");
 
-    String esid;
-    for (int i = 0; i < 32; ++i)
-    {
-        esid += char(EEPROM.read(i));
-    }
-    Serial.println();
-    Serial.print("SSID: ");
-    Serial.println(esid);
-    Serial.println("Reading EEPROM pass");
+  String esid;
+  for (int i = 0; i < 32; ++i)
+  {
+    esid += char(EEPROM.read(i));
+  }
+  Serial.println();
+  Serial.print("SSID: ");
+  Serial.println(esid);
+  Serial.println("Reading EEPROM pass");
 
-    String epass = "";
-    for (int i = 32; i < 96; ++i)
-    {
-        epass += char(EEPROM.read(i));
-    }
-    Serial.print("PASS: ");
-    Serial.println(epass);
+  String epass = "";
+  for (int i = 32; i < 96; ++i)
+  {
+    epass += char(EEPROM.read(i));
+  }
+  Serial.print("PASS: ");
+  Serial.println(epass);
 
-    WiFi.begin(esid.c_str(), epass.c_str());
-    if (testWifi())
-    {
-        Serial.println("Succesfully Connected!!!");
-        return;
-    }
-    else
-    {
-        Serial.println("Turning the HotSpot On");
-        launchWeb();
-        setupAP(); // Setup HotSpot
-    }
+  WiFi.begin(esid.c_str(), epass.c_str());
+  if (testWifi())
+  {
+    Serial.println("Succesfully Connected!!!");
+    return;
+  }
+  else
+  {
+    Serial.println("Turning the HotSpot On");
+    launchWeb();
+    setupAP(); // Setup HotSpot
+  }
 
-    Serial.println();
-    Serial.println("Waiting.");
+  Serial.println();
+  Serial.println("Waiting.");
 
-    while ((WiFi.status() != WL_CONNECTED))
-    {
-        Serial.print(".");
-        delay(100);
-        server.handleClient();
-    }
+  while ((WiFi.status() != WL_CONNECTED))
+  {
+    Serial.print(".");
+    delay(100);
+    server.handleClient();
+  }
 }
 
 void createWebServer()
 {
- {
+  {
     server.on("/", []() {
-
       IPAddress ip = WiFi.softAPIP();
       String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
       content = "<!DOCTYPE HTML>\r\n<html>Hello from ESP8266 at ";
@@ -107,9 +104,11 @@ void createWebServer()
     server.on("/setting", []() {
       String qsid = server.arg("ssid");
       String qpass = server.arg("pass");
-      if (qsid.length() > 0 && qpass.length() > 0) {
+      if (qsid.length() > 0 && qpass.length() > 0)
+      {
         Serial.println("clearing eeprom");
-        for (int i = 0; i < 96; ++i) {
+        for (int i = 0; i < 96; ++i)
+        {
           EEPROM.write(i, 0);
         }
         Serial.println(qsid);
@@ -136,23 +135,25 @@ void createWebServer()
         content = "{\"Success\":\"saved to eeprom... reset to boot into new wifi\"}";
         statusCode = 200;
         ESP.reset();
-      } else {
+      }
+      else
+      {
         content = "{\"Error\":\"404 not found\"}";
         statusCode = 404;
         Serial.println("Sending 404");
       }
       server.sendHeader("Access-Control-Allow-Origin", "*");
       server.send(statusCode, "application/json", content);
-
     });
-  } 
+  }
 }
-//-------- Fuctions used for WiFi credentials saving and connecting to it which you do not need to change 
+//-------- Fuctions used for WiFi credentials saving and connecting to it which you do not need to change
 bool testWifi(void)
 {
   int c = 0;
   Serial.println("Waiting for Wifi to connect");
-  while ( c < 20 ) {
+  while (c < 20)
+  {
     if (WiFi.status() == WL_CONNECTED)
     {
       return true;
@@ -231,16 +232,12 @@ void setupAP(void)
 
 void WifiConnectionCheckLoop()
 {
-    if ((WiFi.status() == WL_CONNECTED))
+  if ((WiFi.status() == WL_CONNECTED))
   {
 
-    for (int i = 0; i < 10; i++)
-    {
-      digitalWrite(LED_BUILTIN, HIGH);
-      delay(1000);
-      digitalWrite(LED_BUILTIN, LOW);
-      delay(4000);
-    }
-
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(200);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(200);
   }
 }
