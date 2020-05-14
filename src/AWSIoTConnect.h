@@ -11,3 +11,4 @@ void setupClient();
 void callback(char *topic, byte *payload, int length);
 void sendMessageToAWS(String msg);
 void handleCertificates();
+long setCurrentTime();

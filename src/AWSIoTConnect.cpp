@@ -9,6 +9,7 @@ WiFiClientSecure espClient;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org");
 PubSubClient client(AWS_endpoint, 8883, callback, espClient);
+long epochCurrentTime;
 
 void setupClient()
 {
@@ -23,6 +24,12 @@ void setupClient()
     espClient.setX509Time(timeClient.getEpochTime());
     Serial.println("Connected to AWS");
 }
+
+long setCurrentTime()
+{
+    return epochCurrentTime = timeClient.getEpochTime();
+}
+
 void callback(char *topic, byte *payload, int length)
 {
     Serial.print("Message arrived [");
