@@ -7,8 +7,9 @@
 #endif
 
 //Func Declare
-void setupClient();
+
+void SetupTimeClient();
 void callback(char *topic, byte *payload, int length);
 void sendMessageToAWS(String msg);
-void handleCertificates();
+void HandleCertificates();
 long setCurrentTime();

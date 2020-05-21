@@ -11,7 +11,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org");
 PubSubClient client(AWS_endpoint, 8883, callback, espClient);
 long epochCurrentTime;
 
-void setupClient()
+void SetupTimeClient()
 {
     espClient.setBufferSizes(512, 512);
 
@@ -47,7 +47,7 @@ void sendMessageToAWS(String msg)
     {
         if (client.connect("ESPthing"))
         {
-            Serial.println("Reconnect success");
+            //Serial.println("Reconnect success");
             client.subscribe("inTopic");
         }
         else
@@ -57,13 +57,14 @@ void sendMessageToAWS(String msg)
     }
     if (client.connected())
     {
-        Serial.println("Sending to AWS");
+        //Serial.println("Sending to AWS");
         bool sendResult = client.publish("outTopic", msg.c_str());
-        Serial.println(sendResult ? "Success sending to AWS" : "Failed to send");
+        Serial.println(sendResult ? "" : "Failed to send");
     }
     client.loop();
 }
-void handleCertificates()
+
+void HandleCertificates()
 {
     if (!SPIFFS.begin())
     {

@@ -21,13 +21,13 @@ String content;
 
 void DefaultWifiSetup()
 {
-  Serial.begin(115200); //Initialising if(DEBUG)Serial Monitor
+  
   Serial.println();
-  Serial.println("Disconnecting previously connected WiFi");
+  Serial.println("Setting up WiFi");
   WiFi.disconnect();
   EEPROM.begin(512); //Initialasing EEPROM
   delay(10);
-  pinMode(LED_BUILTIN, OUTPUT);
+  
   Serial.println();
   Serial.println();
   Serial.println("Startup");
@@ -234,10 +234,9 @@ void WifiConnectionCheckLoop()
 {
   if ((WiFi.status() == WL_CONNECTED))
   {
-
     digitalWrite(LED_BUILTIN, HIGH);
     delay(200);
     digitalWrite(LED_BUILTIN, LOW);
-    delay(200);
+    delay(500);
   }
 }
