@@ -4,14 +4,20 @@
 #include <DNSServer.h>
 #include <EEPROM.h>
 #include "WifiChecker.h"
-#include <hcsr04.h>
 #include "AWSIoTConnect.h"
 #include "ArduinoJson.h"
+#include "Ultrasonic.h"
 
-#define TRIG_PIN 5
-#define ECHO_PIN 4
+#define TRIG_PIN_1 5
+#define ECHO_PIN_1 4
 
-HCSR04 hcsr04first(TRIG_PIN, ECHO_PIN, 20, 9000);
+#define TRIG_PIN_2 5
+#define ECHO_PIN_2 4
+
+Ultrasonic door1Sensor(TRIG_PIN_1, ECHO_PIN_1, 17760);
+Ultrasonic door2Sensor(TRIG_PIN_2, ECHO_PIN_2, 17760);
+
+
 String convertToJSON(int, int);
 void ReadValues(long);
 long lastMsg = 0;
@@ -32,6 +38,9 @@ void setup()
 
   Serial.println("Reading cetificates");
   HandleCertificates();
+
+  //Set up Ultrasonic sensors.
+
 
   //Set Last message time to current time.
   lastMsg = setCurrentTime();
@@ -99,7 +108,7 @@ void ReadValues(long now)
   {
     if (firstSensor == 0)
     {
-      firstSensor = hcsr04first.distanceInMillimeters();
+      firstSensor = door1Sensor.Ranging(1);
       Serial.print("firstSensor ");
       Serial.println(firstSensor);
     }
@@ -108,7 +117,7 @@ void ReadValues(long now)
   {
     if (secondSensor == 0)
     {
-      secondSensor = hcsr04first.distanceInMillimeters();
+      secondSensor = door2Sensor.Ranging(1);
       Serial.print("secondSensor ");
       Serial.println(secondSensor);
     }
