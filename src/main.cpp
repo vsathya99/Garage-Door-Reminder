@@ -11,28 +11,30 @@
 #define TRIG_PIN_1 5
 #define ECHO_PIN_1 4
 
-#define TRIG_PIN_2 5
-#define ECHO_PIN_2 4
+#define TRIG_PIN_2 12
+#define ECHO_PIN_2 13
 
 Ultrasonic door1Sensor(TRIG_PIN_1, ECHO_PIN_1, 17760);
 Ultrasonic door2Sensor(TRIG_PIN_2, ECHO_PIN_2, 17760);
 
-
 String convertToJSON(int, int);
 void ReadValues(long);
+void BlinkLED();
+
 long lastMsg = 0;
 int firstSensor = 0;
 int secondSensor = 0;
+bool BlinkFlag = false;
+bool LEDStatus = false;
 
 //JSON object
 StaticJsonDocument<200> doc;
-
-
 
 void setup()
 {
   Serial.begin(115200); //Initialising if(DEBUG)Serial Monitor
   pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite (LED_BUILTIN, LOW);
   DefaultWifiSetup();
   SetupTimeClient();
 
@@ -41,9 +43,9 @@ void setup()
 
   //Set up Ultrasonic sensors.
 
-
   //Set Last message time to current time.
   lastMsg = setCurrentTime();
+  digitalWrite (LED_BUILTIN, HIGH);
 }
 
 void loop()
@@ -52,8 +54,6 @@ void loop()
   //Check for sensor 1
   //int distInCm = hcsr04first.distanceInMillimeters();
   ReadValues(now);
-  
-  
 
   if (now - lastMsg >= 60)
   {
@@ -103,7 +103,7 @@ String convertToJSON(int firstSensor, int secondSensor)
 }
 void ReadValues(long now)
 {
-  
+
   if (now - lastMsg > 20 && now - lastMsg < 30)
   {
     if (firstSensor == 0)
@@ -122,4 +122,30 @@ void ReadValues(long now)
       Serial.println(secondSensor);
     }
   }
+  if (!(now%5))
+  {
+     if (BlinkFlag == false)
+    {
+      BlinkFlag = true;
+      BlinkLED();
+    }
+  }
+  else
+    {
+      BlinkFlag = false;
+    }
+}
+
+void BlinkLED()
+{
+  Serial.println("Blinking");
+  if (LEDStatus == true)
+  {
+    LEDStatus = false;
+  }
+  else
+  {
+    LEDStatus = true;
+  }
+  digitalWrite(LED_BUILTIN, LEDStatus);
 }
