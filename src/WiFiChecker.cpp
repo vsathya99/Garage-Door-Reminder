@@ -224,7 +224,7 @@ void setupAP(void)
   }
   st += "</ol>";
   delay(100);
-  WiFi.softAP("how2electronics", "");
+  WiFi.softAP("GD1", "");
   Serial.println("softap");
   launchWeb();
   Serial.println("over");
@@ -232,11 +232,11 @@ void setupAP(void)
 
 void WifiConnectionCheckLoop()
 {
-  if ((WiFi.status() == WL_CONNECTED))
+  if (!(WiFi.status() == WL_CONNECTED))
   {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(500);
+    while (!testWifi())
+    {
+      delay(2000);
+    }
   }
 }

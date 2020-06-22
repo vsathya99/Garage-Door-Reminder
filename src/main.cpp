@@ -18,7 +18,7 @@ Ultrasonic door1Sensor(TRIG_PIN_1, ECHO_PIN_1, 17760);
 Ultrasonic door2Sensor(TRIG_PIN_2, ECHO_PIN_2, 17760);
 
 String convertToJSON(int, int);
-void ReadValues(long);
+void PerformTasks(long);
 void BlinkLED();
 
 long lastMsg = 0;
@@ -53,7 +53,7 @@ void loop()
   long now = setCurrentTime();
   //Check for sensor 1
   //int distInCm = hcsr04first.distanceInMillimeters();
-  ReadValues(now);
+  PerformTasks(now);
 
   if (now - lastMsg >= 60)
   {
@@ -101,7 +101,7 @@ String convertToJSON(int firstSensor, int secondSensor)
   String returnValue = buffer;
   return returnValue;
 }
-void ReadValues(long now)
+void PerformTasks(long now)
 {
 
   if (now - lastMsg > 20 && now - lastMsg < 30)
