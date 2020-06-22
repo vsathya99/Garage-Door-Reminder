@@ -1,2 +1,2 @@
-void DefaultWifiSetup();
+void DefaultWifiConnect();
 void WifiConnectionCheckLoop();

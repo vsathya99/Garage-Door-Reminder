@@ -3,7 +3,7 @@
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include <EEPROM.h>
-#include "WifiChecker.h"
+#include "WiFiChecker.h"
 #include "AWSIoTConnect.h"
 #include "ArduinoJson.h"
 #include "Ultrasonic.h"
@@ -35,7 +35,7 @@ void setup()
   Serial.begin(115200); //Initialising if(DEBUG)Serial Monitor
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite (LED_BUILTIN, LOW);
-  DefaultWifiSetup();
+  DefaultWifiConnect();
   SetupTimeClient();
 
   Serial.println("Reading cetificates");
