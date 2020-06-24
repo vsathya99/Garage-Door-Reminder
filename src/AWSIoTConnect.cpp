@@ -58,7 +58,7 @@ void sendMessageToAWS(String msg)
     if (client.connected())
     {
         //Serial.println("Sending to AWS");
-        bool sendResult = client.publish("outTopic", msg.c_str());
+        bool sendResult = client.publish("GDRTopic", msg.c_str());
         Serial.println(sendResult ? "" : "Failed to send");
     }
     client.loop();

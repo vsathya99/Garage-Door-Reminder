@@ -13,6 +13,9 @@
 
 #define TRIG_PIN_2 12
 #define ECHO_PIN_2 13
+#define DoorOpenLength 10
+#define WaitForNotSendMsg 1800
+#define NoOfSecondsInMin 60
 
 Ultrasonic door1Sensor(TRIG_PIN_1, ECHO_PIN_1, 17760);
 Ultrasonic door2Sensor(TRIG_PIN_2, ECHO_PIN_2, 17760);
@@ -30,11 +33,29 @@ bool LEDStatus = false;
 //JSON object
 StaticJsonDocument<200> doc;
 
+bool CheckIfBothDoorsAreClosed(int firstSensor, int secondSensor)
+{
+  if (firstSensor < DoorOpenLength || secondSensor < DoorOpenLength)
+  {
+    Serial.println ("Check Doors return false");
+    return false;
+  }
+  Serial.println ("Check Doors return true");
+  return true;
+}
+bool CheckIfTimeToSendClosedMsg(long checkTime)
+{
+  //Send every half an hour 
+  Serial.println ("Check time to send : ");
+  Serial.println (checkTime % WaitForNotSendMsg);
+  return (checkTime % WaitForNotSendMsg < NoOfSecondsInMin);
+}
+
 void setup()
 {
   Serial.begin(115200); //Initialising if(DEBUG)Serial Monitor
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite (LED_BUILTIN, LOW);
+  digitalWrite(LED_BUILTIN, LOW);
   DefaultWifiConnect();
   SetupTimeClient();
 
@@ -45,7 +66,7 @@ void setup()
 
   //Set Last message time to current time.
   lastMsg = setCurrentTime();
-  digitalWrite (LED_BUILTIN, HIGH);
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void loop()
@@ -60,11 +81,26 @@ void loop()
     lastMsg = now;
     WifiConnectionCheckLoop();
     String msg = convertToJSON(firstSensor, secondSensor);
+
+    if (CheckIfBothDoorsAreClosed(firstSensor, secondSensor))
+    {
+      Serial.println ("Inside CheckIfBothDoorsAreClosed");
+      if (CheckIfTimeToSendClosedMsg(now))
+      {
+        Serial.print("Sending the following to AWS (Closed Door): ");
+        Serial.println(msg);
+        sendMessageToAWS(msg);
+      }
+    }
+    else
+    {
+      Serial.print("Sending the following to AWS: ");
+      Serial.println(msg);
+      sendMessageToAWS(msg);
+    }
+
     firstSensor = 0;
     secondSensor = 0;
-    Serial.print("Sending the following to AWS: ");
-    Serial.println(msg);
-    sendMessageToAWS(msg);
   }
   //delay(1000);
 }
@@ -122,18 +158,18 @@ void PerformTasks(long now)
       Serial.println(secondSensor);
     }
   }
-  if (!(now%5))
+  if (!(now % 5))
   {
-     if (BlinkFlag == false)
+    if (BlinkFlag == false)
     {
       BlinkFlag = true;
       BlinkLED();
     }
   }
   else
-    {
-      BlinkFlag = false;
-    }
+  {
+    BlinkFlag = false;
+  }
 }
 
 void BlinkLED()
