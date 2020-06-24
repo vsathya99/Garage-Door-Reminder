@@ -49,6 +49,7 @@ void sendMessageToAWS(String msg)
         {
             //Serial.println("Reconnect success");
             client.subscribe("inTopic");
+            client.setKeepAlive(3000);
         }
         else
         {
@@ -62,6 +63,9 @@ void sendMessageToAWS(String msg)
         Serial.println(sendResult ? "" : "Failed to send");
     }
     client.loop();
+    //Fix 13 - Disconnect AWS IoT 
+    client.flush();
+    client.disconnect();
 }
 
 void HandleCertificates()

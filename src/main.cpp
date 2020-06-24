@@ -84,7 +84,7 @@ void loop()
 
     if (CheckIfBothDoorsAreClosed(firstSensor, secondSensor))
     {
-      Serial.println ("Inside CheckIfBothDoorsAreClosed");
+      // Serial.println ("Inside CheckIfBothDoorsAreClosed");
       if (CheckIfTimeToSendClosedMsg(now))
       {
         Serial.print("Sending the following to AWS (Closed Door): ");
