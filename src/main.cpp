@@ -29,6 +29,7 @@ int firstSensor = 0;
 int secondSensor = 0;
 bool BlinkFlag = false;
 bool LEDStatus = false;
+bool justRebooted = true;
 
 //JSON object
 StaticJsonDocument<200> doc;
@@ -67,6 +68,7 @@ void setup()
   //Set Last message time to current time.
   lastMsg = setCurrentTime();
   digitalWrite(LED_BUILTIN, HIGH);
+  justRebooted= true;
 }
 
 void loop()
@@ -78,9 +80,16 @@ void loop()
 
   if (now - lastMsg >= 60)
   {
+    
     lastMsg = now;
-    WifiConnectionCheckLoop();
+    // WifiConnectionCheckLoop();
     String msg = convertToJSON(firstSensor, secondSensor);
+    if (justRebooted)
+    {
+      sendMessageToAWS(msg);
+      Serial.println("Sent first message after Reboot");
+      justRebooted = false;
+    }
 
     if (CheckIfBothDoorsAreClosed(firstSensor, secondSensor))
     {
@@ -154,7 +163,7 @@ void PerformTasks(long now)
     if (secondSensor == 0)
     {
       secondSensor = door2Sensor.Ranging(1);
-      Serial.print("secondSensor ");
+      Serial.print("secondSensor :");
       Serial.println(secondSensor);
     }
   }

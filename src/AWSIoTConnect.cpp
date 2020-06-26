@@ -1,6 +1,9 @@
 
 #define AWSIoTConnect
 #include "AWSIoTConnect.h"
+#include "WiFiChecker.h"
+
+#define KeepAliveTime 3000 //For 3 secs
 
 const char *AWS_endpoint = "a25b0bd2aiywyd-ats.iot.us-east-2.amazonaws.com";
 
@@ -45,11 +48,12 @@ void sendMessageToAWS(String msg)
 {
     if (!client.connected())
     {
+        WifiConnectionCheckLoop();
         if (client.connect("ESPthing"))
         {
             //Serial.println("Reconnect success");
             client.subscribe("inTopic");
-            client.setKeepAlive(3000);
+            client.setKeepAlive(KeepAliveTime); 
         }
         else
         {
@@ -60,7 +64,7 @@ void sendMessageToAWS(String msg)
     {
         //Serial.println("Sending to AWS");
         bool sendResult = client.publish("GDRTopic", msg.c_str());
-        Serial.println(sendResult ? "" : "Failed to send");
+        Serial.println(sendResult ? "Sent to AWS" : "Failed to send");
     }
     client.loop();
     //Fix 13 - Disconnect AWS IoT 
