@@ -1,8 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>
+#include <WiFiChecker.h>
 
-#define ConfigPortalTimeout 300
+#define ConfigPortalTimeout 300 //Wait for 5 mins
 
 void DefaultWifiConnect()
 {
@@ -26,7 +27,7 @@ void DefaultWifiConnect()
   wifiManager.autoConnect();
   //or use this for auto generated name ESP + ChipID
   //wifiManager.autoConnect();
-
+  WifiConnectionCheckLoop();
   //if you get here you have connected to the WiFi
   Serial.println("connected...yeey :)");
   Serial.println("SSID");
